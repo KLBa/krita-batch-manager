@@ -6,6 +6,7 @@ import html
 import shutil
 from enum import Enum
 from pathlib import Path
+from typing import TypeVar
 
 import krita
 from krita import Krita
@@ -935,7 +936,8 @@ class LineEditCaptureEscape(QLineEdit):
 		self.num_pressed = max(self.num_pressed - 1, 0)
 		super().keyReleaseEvent(e)
 
+T = TypeVar("T")
 
-def unwrap[T](val: T | None) -> T:
+def unwrap(val: T | None) -> T:
 	assert val is not None
 	return val

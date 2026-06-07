@@ -1,14 +1,13 @@
-from __future__ import annotations
 
 import enum
 import json
 import unittest
 from enum import Enum
 from pathlib import Path
-from typing import Callable, Iterator, Never, Type
+from typing import Callable, Iterator, Type, TypeVar
 
-type Value = dict[str, Value] | list[Value] | str | int | float | bool | None
-
+Value = dict[str, "Value"] | list["Value"] | str | int | float | bool | None
+T = TypeVar("T", bound=Enum)
 
 class Any:
 	path: list[str | int]
@@ -27,7 +26,7 @@ class Any:
 		with open(path, "r") as f:
 			return Any(json.load(f))
 
-	def error(self, msg: str) -> Never:
+	def error(self, msg: str) -> None:
 		if len(self.path) == 0:
 			path = "root"
 		else:
@@ -73,7 +72,7 @@ class Any:
 		if self.value is not None:
 			self.error("expected null")
 
-	def enum[T: Enum](self, enum: Type[T]) -> T:
+	def enum(self, enum: Type[T]) -> T:
 		if not isinstance(self.value, str) or self.value not in enum.__members__:
 			self.error(f"expected one of {', '.join(enum.__members__.keys())}")
 		return enum[self.value]

@@ -4,9 +4,11 @@
 import asyncio
 from dataclasses import dataclass
 from threading import Thread
-from typing import Any, Coroutine, Generator, Literal, Never, Self, Tuple
+from typing import Any, Coroutine, Generator, Generic, Literal, Tuple, TypeVar
 
 from PyQt5.QtCore import QObject, pyqtSignal, qCritical
+
+T = TypeVar("T")
 
 loop = asyncio.new_event_loop()
 
@@ -21,23 +23,23 @@ Thread(target=runner).start()
 
 # Wrap any asyncio-enabled coroutine to run on the external thread.
 @dataclass
-class Wrap[T](Coroutine[Any, Any, T], Generator[Any, Any, T]):
+class Wrap(Coroutine[Any, Any, T], Generator[Any, Any, T], Generic[T]):
 	f: Coroutine[Any, Any, T]
 
 	def __await__(self) -> Generator[Any, Any, T]:
 		return self
 
-	def __next__(self) -> Self:
+	def __next__(self) -> "Wrap[T]":
 		return self
 
 	# wrap in a tuple since `.send(None)` is a special case
-	def send(self, value: Tuple[T]) -> Never:
+	def send(self, value: Tuple[T]) -> None:
 		raise StopIteration(value[0])
 
-	def throw(self, value: Any, *args) -> Never:
+	def throw(self, value: Any, *args) -> None:
 		raise value
 
-	def close(self) -> Never:
+	def close(self) -> None:
 		raise GeneratorExit
 
 

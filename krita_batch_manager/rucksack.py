@@ -5,7 +5,7 @@ import json
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Union
 
 from . import json_cursor
 
@@ -38,7 +38,7 @@ class Item:
 	data: ItemData
 
 
-type ItemData = Node | Vector | LayerStyle
+ItemData = Union["Node", "Vector", "LayerStyle"]
 
 
 @dataclass
